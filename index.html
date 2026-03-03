@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>M&N • Modular Cabinet Installer • Bohol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- IMPORTANT: For production, remove the CDN and use Tailwind CLI: https://tailwindcss.com/docs/installation -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
+      
+        body { font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+        .heading-font { font-family: 'Playfair Display', sans-serif; }
+      
+        .hero-bg { position: relative; min-height: 100vh; overflow: hidden; }
+        .hero-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+        .hero-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.85)); z-index: -1; }
+      
+        @media (max-width: 768px) { .hero-h1 { font-size: 2.75rem !important; line-height: 1.05 !important; } }
+      
+        .gallery-img { transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .gallery-img:hover { transform: scale(1.08); }
+      
+        .module-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .module-card.active { border-color: #10b981 !important; background-color: rgba(16, 185, 129, 0.15) !important; transform: translateY(-3px); }
+      
+        .wood-bg { background-image: url('https://picsum.photos/id/201/1200/800'); background-size: cover; background-position: center; }
+        .tail-text { letter-spacing: 3px; font-size: 0.8rem; }
+        #map { height: 280px; border-radius: 24px; width: 100%; }
+        @media (min-width: 768px) { #map { height: 380px; } }
+        .touch-btn { min-height: 48px; }
+        .logo-img { height: 42px; width: auto; transition: transform 0.3s; }
+        .logo-img:hover { transform: scale(1.08); }
+
+        /* Carousel for gallery swipe */
+        .carousel-container {
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        .carousel-container::-webkit-scrollbar { display: none; }
+        .carousel-item {
+            flex: 0 0 auto;
+            width: 85vw;
+            max-width: 420px;
+            scroll-snap-align: center;
+        }
+        @media (min-width: 768px) {
+            .carousel-item { width: 420px; }
+        }
+    </style>
+</head>
+<body class="bg-stone-950 text-stone-200 overflow-x-hidden">
+
+    <!-- NAVBAR -->
+    <nav class="bg-stone-900 border-b border-amber-900 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-5 py-4 flex justify-between items-center">
+            <a href="#home" class="flex items-center gap-3 group">
+                <img src="https://github.com/etherneomdc3-IT/RAW/blob/main/noellogo.png?raw=true" alt="M&N Logo" class="logo-img">
+                <div>
+                    <span class="heading-font text-3xl tracking-tighter group-hover:text-amber-400 transition">M&N</span>
+                    <span class="block text-[10px] text-amber-400 tail-text -mt-1">MODULAR CABINETS INSTALLER</span>
+                </div>
+            </a>
+            <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest font-medium">
+                <a href="#home" class="hover:text-amber-400 transition-colors">Home</a>
+                <a href="#about" class="hover:text-amber-400 transition-colors">About</a>
+                <a href="#services" class="hover:text-amber-400 transition-colors">Services</a>
+                <a href="#gallery" class="hover:text-amber-400 transition-colors">Gallery</a>
+                <a href="#configurator" class="hover:text-amber-400 transition-colors">Build Yours</a>
+                <a href="#contact" class="hover:text-amber-400 transition-colors">Contact</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="#configurator" id="build-now-btn" class="hidden sm:flex bg-amber-600 hover:bg-amber-500 transition-all px-6 py-3 text-sm font-semibold rounded-2xl items-center gap-2 touch-btn">
+                    <i class="fas fa-hammer"></i> BUILD NOW
+                </a>
+                <button id="mobile-menu-btn" class="md:hidden w-11 h-11 flex items-center justify-center text-3xl text-amber-300 active:scale-90 transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-stone-900 border-t border-amber-900 py-6">
+            <div class="px-6 flex flex-col gap-6 text-lg font-medium">
+                <a href="#home" class="mobile-link py-2">Home</a>
+                <a href="#about" class="mobile-link py-2">About Us</a>
+                <a href="#services" class="mobile-link py-2">Services</a>
+                <a href="#gallery" class="mobile-link py-2">Gallery</a>
+                <a href="#configurator" class="mobile-link py-2">Build Your Cabinet</a>
+                <a href="#contact" class="mobile-link py-2">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section id="home" class="hero-bg flex items-center pt-16 relative">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="https://raw.githubusercontent.com/etherneomdc3-IT/RAW/main/noel.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="max-w-6xl mx-auto px-5 text-center relative z-10">
+            <div class="max-w-3xl mx-auto">
+                <div class="inline-flex bg-white/10 backdrop-blur-xl px-6 py-2.5 rounded-3xl text-xs tracking-widest mb-8 items-center gap-3">
+                    <span class="text-emerald-400">● LIVE IN BOHOL</span>
+                </div>
+                <h1 class="hero-h1 heading-font text-[2.75rem] sm:text-6xl md:text-7xl lg:text-[92px] leading-[1.05] font-bold tracking-tighter text-white">
+                    MODULAR CABINETS<br>BUILT FOR<br><span class="bg-gradient-to-r from-amber-300 to-emerald-300 bg-clip-text text-transparent">YOUR HOME</span>
+                </h1>
+                <p class="mt-8 text-xl sm:text-2xl text-stone-200 max-w-xl mx-auto">
+                    TV Consoles • Kitchens • Wardrobes • Entertainment Walls<br>
+                    <span class="text-amber-400 font-medium">2–4 weeks • Bohol delivery</span>
+                </p>
+                <div class="mt-12 flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#configurator" onclick="const el = document.getElementById('configurator'); if (el) el.scrollIntoView({ behavior: 'smooth' }); return false;" class="touch-btn bg-white text-stone-950 hover:bg-amber-200 font-semibold text-lg px-10 py-6 rounded-3xl flex items-center justify-center gap-3 active:scale-95 transition">
+                        START BUILDING YOURS <span class="text-2xl">🛠️</span>
+                    </a>
+                    <a href="#gallery" class="touch-btn border-2 border-white/70 hover:border-white text-lg font-medium px-10 py-6 rounded-3xl transition">
+                        SEE OUR WORK
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 flex flex-col items-center gap-1 text-xs tracking-widest text-white/70 z-10">
+            <div>SCROLL TO EXPLORE</div>
+            <i class="fas fa-chevron-down text-2xl animate-bounce"></i>
+        </div>
+    </section>
+
+    <!-- QUICK STATS -->
+    <div class="bg-stone-900 py-8 border-b border-amber-900">
+        <div class="max-w-7xl mx-auto px-5 grid grid-cols-3 md:grid-cols-6 gap-6 text-center">
+            <div><div class="text-4xl font-semibold text-amber-400">2018</div><div class="text-xs text-stone-400">EST. 2018</div></div>
+            <div><div class="text-4xl font-semibold text-amber-400">68</div><div class="text-xs text-stone-400">PROJECTS</div></div>
+            <div><div class="text-4xl font-semibold text-amber-400">100%</div><div class="text-xs text-stone-400">HAPPY CLIENTS</div></div>
+            <div><div class="text-4xl font-semibold text-amber-400">2-4</div><div class="text-xs text-stone-400">WEEKS</div></div>
+            <div><div class="text-4xl font-semibold text-amber-400">Bilar</div><div class="text-xs text-stone-400">+ Tagbilaran</div></div>
+            <div><div class="text-4xl font-semibold text-amber-400">❤️</div><div class="text-xs text-stone-400">Thankful</div></div>
+        </div>
+    </div>
+
+    <!-- ABOUT -->
+    <section id="about" class="py-20 md:py-28 bg-stone-900">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5">
+                    <div class="wood-bg h-96 md:h-[520px] rounded-3xl relative overflow-hidden shadow-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-br from-black/70 via-transparent to-black/70"></div>
+                        <div class="absolute bottom-8 left-8 right-8">
+                            <div class="flex items-center gap-5">
+                                <img src="https://github.com/etherneomdc3-IT/RAW/blob/main/noellogo.png?raw=true" alt="M&N Logo" class="h-20 w-auto">
+                                <div>
+                                    <div class="text-3xl heading-font">M&N Team</div>
+                                    <div class="text-amber-400">Bohol Cabinet Makers</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-7">
+                    <div class="uppercase text-amber-400 text-sm tracking-widest mb-4">BOHOL'S FAVORITE MODULAR BUILDER</div>
+                    <h2 class="heading-font text-5xl md:text-6xl leading-none">Real wood.<br>Smart modular design.<br><span class="text-stone-400">Built to grow with you.</span></h2>
+                    <div class="mt-10 text-lg text-stone-300 space-y-6">
+                        <p>We specialize in custom modular cabinets using premium Philippine hardwood. Every piece is made in our Bilar workshop and delivered across Bohol.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            <div>
+                                <div class="text-emerald-400 font-medium mb-3">Recent Projects</div>
+                                <ul class="space-y-4">
+                                    <li class="flex gap-3"><span class="text-amber-400">✔</span> TV Console – Bilar</li>
+                                    <li class="flex gap-3"><span class="text-amber-400">✔</span> Entertainment Wall – San Isidro, Tagbilaran</li>
+                                </ul>
+                            </div>
+                            <div class="italic border-l-4 border-amber-400 pl-6 text-stone-400">
+                                “Feeling thankful with every project completed.”
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="py-20 md:py-28 bg-stone-950 border-t border-amber-900">
+        <div class="max-w-7xl mx-auto px-5">
+            <h2 class="heading-font text-5xl md:text-6xl text-center mb-16">Our Services</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-stone-900 p-8 rounded-3xl border border-amber-900/50 hover:border-amber-600 transition">
+                    <div class="text-5xl mb-6">📺</div>
+                    <h3 class="text-2xl font-semibold mb-4">TV Consoles & Entertainment Units</h3>
+                    <p class="text-stone-400">Floating designs, cable management, LED integration.</p>
+                </div>
+                <div class="bg-stone-900 p-8 rounded-3xl border border-amber-900/50 hover:border-amber-600 transition">
+                    <div class="text-5xl mb-6">🍳</div>
+                    <h3 class="text-2xl font-semibold mb-4">Modular Kitchens</h3>
+                    <p class="text-stone-400">Custom layouts, soft-close hardware, Philippine hardwood.</p>
+                </div>
+                <div class="bg-stone-900 p-8 rounded-3xl border border-amber-900/50 hover:border-amber-600 transition">
+                    <div class="text-5xl mb-6">🛏️</div>
+                    <h3 class="text-2xl font-semibold mb-4">Wardrobes & Closets</h3>
+                    <p class="text-stone-400">Sliding doors, adjustable shelves, built-in lighting.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONFIGURATOR -->
+    <section id="configurator" class="py-20 md:py-28 bg-stone-900 border-t border-amber-900">
+        <div class="max-w-7xl mx-auto px-5">
+            <div class="text-center mb-12">
+                <h2 class="heading-font text-5xl md:text-6xl">Build Your Cabinet</h2>
+                <p class="mt-4 text-xl text-stone-300">Mix & match modules • Instant estimate</p>
+            </div>
+            <div id="modules-list" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div>
+            <div class="text-center bg-stone-800/50 p-10 rounded-3xl border border-amber-900/50">
+                <div class="text-4xl font-bold text-emerald-400 mb-4">
+                    Estimated Total: <span id="total-price">₱0</span>
+                </div>
+                <div class="text-5xl mb-4" id="preview-icon">🛠️</div>
+                <div class="text-2xl heading-font mb-8" id="preview-name">Your Custom Cabinet</div>
+                <button onclick="sendToLeon()" class="bg-emerald-600 hover:bg-emerald-500 px-12 py-6 rounded-3xl text-xl font-semibold touch-btn">
+                    Send Design to M&N
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section id="gallery" class="py-20 md:py-28 bg-stone-950 border-t border-amber-900">
+        <div class="max-w-7xl mx-auto px-5">
+            <h2 class="heading-font text-5xl md:text-6xl text-center mb-8">Our Work</h2>
+            <p class="text-center text-xl text-stone-300 mb-12">Real modular cabinet projects crafted in Bohol</p>
+
+            <!-- Featured small grid (optional) -->
+            <div class="grid md:grid-cols-3 gap-6 mb-16 opacity-80">
+                <img src="https://picsum.photos/id/1015/600/800" alt="Featured Project" class="gallery-img rounded-3xl object-cover aspect-[3/4]">
+                <img src="https://picsum.photos/id/1020/600/800" alt="Featured Project" class="gallery-img rounded-3xl object-cover aspect-[3/4]">
+                <img src="https://picsum.photos/id/1040/600/800" alt="Featured Project" class="gallery-img rounded-3xl object-cover aspect-[3/4]">
+            </div>
+
+            <!-- Swipeable Carousel with your 20 photos -->
+            <h3 class="heading-font text-4xl text-center mb-6 mt-12">Our Recent Modular Projects</h3>
+            <p class="text-center text-lg text-stone-400 mb-8">Swipe left or right to explore our custom work</p>
+
+            <div class="carousel-container flex gap-6 pb-6">
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/53082601684_3f651f9e28_b.jpg" alt="Modular cabinet project 1" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52769880188_44c14e5aa6_b.jpg" alt="Modular cabinet project 2" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691296059_8a9e622f3e_b.jpg" alt="Modular cabinet project 3" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691300989_8bb5aaba58_b.jpg" alt="Modular cabinet project 4" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691999525_bdf9558b2c_b.jpg" alt="Modular cabinet project 5" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52692018548_5da650251b_b.jpg" alt="Modular cabinet project 6" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691989955_4ee5927c39_b.jpg" alt="Modular cabinet project 7" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691945440_983583d38f_b.jpg" alt="Modular cabinet project 8" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691999150_9c459f6330_b.jpg" alt="Modular cabinet project 9" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691172277_8a7b0c8cb8_b.jpg" alt="Modular cabinet project 10" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691286064_3ec8bb54e4_b.jpg" alt="Modular cabinet project 11" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691289949_77ca40d0a9_b.jpg" alt="Modular cabinet project 12" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691279554_e60f4e0014_b.jpg" alt="Modular cabinet project 13" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691284379_1c8c175120_b.jpg" alt="Modular cabinet project 14" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691280559_7f8e0ad9d5_b.jpg" alt="Modular cabinet project 15" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691269934_9c308fa136_b.jpg" alt="Modular cabinet project 16" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691282974_5812691ae6_b.jpg" alt="Modular cabinet project 17" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691268139_1f5b45f73a_b.jpg" alt="Modular cabinet project 18" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691267108_bb7d2ccf14_b.jpg" alt="Modular cabinet project 19" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+                <div class="carousel-item"><img src="https://live.staticflickr.com/65535/52691265953_cd8718b6ca_b.jpg" alt="Modular cabinet project 20" class="rounded-3xl w-full h-96 object-cover shadow-2xl"></div>
+            </div>
+
+            <p class="text-center text-sm text-stone-500 mt-6">Swipe left/right • Touch to drag on mobile</p>
+
+            <!-- Optional: More inspiration links -->
+            <div class="mt-16 text-center">
+                <h3 class="heading-font text-3xl mb-6">More Inspiration</h3>
+                <p class="text-stone-400 mb-8">Discover hundreds of modular cabinet ideas on these boards and sites:</p>
+                <div class="flex flex-wrap justify-center gap-4 text-sm">
+                    <a href="https://ph.pinterest.com/mahomestylecentercorp/modular-cabinet/" target="_blank" class="text-amber-400 hover:underline">Mahomestyle Center</a>
+                    <a href="https://ph.pinterest.com/akindesign08/modular-cabinet/" target="_blank" class="text-amber-400 hover:underline">Akin Design</a>
+                    <a href="https://ph.pinterest.com/jhoaaanne/modular-cabinets/" target="_blank" class="text-amber-400 hover:underline">Jhoaaanne Collection</a>
+                    <a href="https://www.livspace.com/in/design-ideas/kitchen-designs/cabinet-design" target="_blank" class="text-amber-400 hover:underline">Livspace Kitchens</a>
+                    <!-- Add more as desired -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="py-20 md:py-28 bg-stone-900 border-t border-amber-900">
+        <div class="max-w-7xl mx-auto px-5">
+            <h2 class="heading-font text-5xl md:text-6xl text-center mb-12">Get in Touch</h2>
+            <div class="grid lg:grid-cols-2 gap-12">
+                <div>
+                    <div id="map"></div>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <p class="text-xl mb-6">We're based in Bilar with delivery & installation across Bohol.</p>
+                    <div class="space-y-4 text-lg">
+                        <p><i class="fas fa-phone mr-3 text-amber-400"></i> +63 912 345 6789 (Viber/WhatsApp)</p>
+                        <p><i class="fab fa-facebook mr-3 text-amber-400"></i> facebook.com/mnmodularbohol</p>
+                        <p><i class="fas fa-map-marker-alt mr-3 text-amber-400"></i> Bilar, Bohol • Showroom in Tagbilaran</p>
+                    </div>
+                    <button onclick="alert('Contact form coming soon! For now, message us on Facebook/Viber.')" class="mt-10 bg-amber-600 hover:bg-amber-500 px-10 py-5 rounded-3xl text-lg font-semibold w-fit">
+                        Message Us Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-stone-950 py-12 border-t border-amber-900/50 text-center text-stone-500">
+        <p>© 2025 M&N Modular Cabinets Installer • Bohol, Philippines</p>
+        <p class="mt-2 text-sm">Handcrafted with real Philippine hardwood • Proudly made in Bilar</p>
+    </footer>
+
+    <script>
+        // Mobile menu
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden')));
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                if (this.getAttribute('href') !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        const moduleData = [
+            { id: "tv", name: "Floating TV Console Base", price: 18500, icon: "📺", default: true },
+            { id: "shelves", name: "Open Adjustable Shelves", price: 4500, icon: "📚" },
+            { id: "doors", name: "Soft-Close Doors", price: 7200, icon: "🚪" },
+            { id: "drawers", name: "Full-Extension Drawers", price: 9800, icon: "🗄️" },
+            { id: "led", name: "Built-in LED Lighting", price: 5500, icon: "💡" },
+            { id: "wine", name: "Hidden Wine Rack", price: 6200, icon: "🍷" },
+            { id: "mount", name: "TV Wall Mount", price: 3200, icon: "🖥️" }
+        ];
+
+        function renderModules() {
+            const container = document.getElementById('modules-list');
+            if (!container) return;
+            container.innerHTML = '';
+            moduleData.forEach((mod, i) => {
+                const div = document.createElement('div');
+                div.className = `module-card flex items-center justify-between bg-stone-800 p-6 rounded-3xl cursor-pointer border-2 border-transparent ${mod.default ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-5">
+                        <div class="text-4xl">${mod.icon}</div>
+                        <div>
+                            <div class="font-medium">${mod.name}</div>
+                            <div class="text-xs text-stone-400">Tap to toggle</div>
+                        </div>
+                    </div>
+                    <div class="text-emerald-400 font-mono text-xl">+₱${mod.price.toLocaleString()}</div>
+                `;
+                div.onclick = () => { div.classList.toggle('active'); updateTotal(); updatePreview(); };
+                container.appendChild(div);
+            });
+        }
+
+        function updateTotal() {
+            const totalEl = document.getElementById('total-price');
+            if (!totalEl) return;
+            let total = 0;
+            document.querySelectorAll('.module-card').forEach((card, i) => {
+                if (card.classList.contains('active')) total += moduleData[i].price;
+            });
+            totalEl.textContent = '₱' + total.toLocaleString();
+        }
+
+        function updatePreview() {
+            const nameEl = document.getElementById('preview-name');
+            const iconEl = document.getElementById('preview-icon');
+            if (!nameEl || !iconEl) return;
+            const count = document.querySelectorAll('.module-card.active').length;
+            if (count >= 5) { nameEl.textContent = "Ultimate Entertainment Wall"; iconEl.textContent = "🏡"; }
+            else if (count >= 3) { nameEl.textContent = "Modern TV Console"; iconEl.textContent = "📺"; }
+            else { nameEl.textContent = "Your Custom Cabinet"; iconEl.textContent = "🛠️"; }
+        }
+
+        function sendToLeon() {
+            const total = document.getElementById('total-price')?.textContent || '₱0';
+            alert(`✅ Design sent to M&N!\n\nEstimated: ${total}\n\nWe will reply on Facebook / Viber within a few hours.\nThank you!`);
+        }
+
+        function initMap() {
+            const mapEl = document.getElementById('map');
+            if (!mapEl) return;
+            const map = L.map('map').setView([9.78, 124.05], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            L.marker([9.75, 124.10]).addTo(map).bindPopup('<b>Bilar Workshop</b>');
+            L.marker([9.65, 123.85]).addTo(map).bindPopup('<b>Tagbilaran Showroom</b>');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderModules();
+            updateTotal();
+            updatePreview();
+            initMap();
+
+            const buildBtn = document.getElementById('build-now-btn');
+            if (buildBtn) {
+                buildBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const el = document.getElementById('configurator');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            console.log('%cM&N Modular Cabinets • Gallery updated with custom photos', 'color:#fbbf24; font-family:monospace');
+        });
+    </script>
+</body>
+</html>
