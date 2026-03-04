@@ -41,9 +41,10 @@
         .about-video-container {
             position: relative;
             width: 100%;
-            height: 20rem; /* Matches h-80 */
+            height: 20rem;
             border-radius: 1.5rem;
             overflow: hidden;
+            cursor: pointer;
         }
         .about-video {
             position: absolute;
@@ -60,9 +61,39 @@
             display: flex;
             align-items: flex-end;
             padding: 1.5rem;
+            transition: background 0.3s;
+        }
+        .about-overlay:hover {
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.2));
+        }
+        .clickable-logo {
+            transition: transform 0.2s;
+        }
+        .clickable-logo:hover {
+            transform: scale(1.05);
+        }
+        .sound-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0,0,0,0.6);
+            color: #fbbf24;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            pointer-events: none;
+            z-index: 5;
+        }
+        .sound-badge i {
+            font-size: 0.875rem;
         }
         @media (min-width: 768px) {
-            .about-video-container { height: 26rem; } /* md:h-[520px] equivalent */
+            .about-video-container { height: 26rem; }
         }
     </style>
 </head>
@@ -95,7 +126,9 @@
 
 <!-- HERO - punchy, less text -->
 <section id="home" class="hero-bg flex items-center relative pt-14">
-    <video autoplay muted loop playsinline class="hero-video"><source src="https://raw.githubusercontent.com/etherneomdc3-IT/RAW/main/noel.mp4" type="video/mp4"></video>
+    <video autoplay muted loop playsinline class="hero-video">
+        <source src="https://raw.githubusercontent.com/etherneomdc3-IT/RAW/main/noel.mp4" type="video/mp4">
+    </video>
     <div class="hero-overlay"></div>
     <div class="max-w-5xl mx-auto px-5 text-center relative z-10 py-12">
         <span class="inline-block bg-white/10 backdrop-blur px-5 py-2 rounded-full text-xs text-emerald-300 tracking-widest mb-6">📍 BOHOL · 2–4 WEEKS</span>
@@ -116,31 +149,40 @@
         <div><span class="text-amber-400 font-bold text-xl">68+</span> <span class="text-stone-400 block text-xs">projects</span></div>
         <div><span class="text-amber-400 font-bold text-xl">100%</span> <span class="text-stone-400 block text-xs">happy</span></div>
         <div><span class="text-amber-400 font-bold text-xl">2-4</span> <span class="text-stone-400 block text-xs">weeks</span></div>
-        <div><span class="text-amber-400 font-bold text-xl">Bilar</span> <span class="text-stone-400 block text-xs">workshop</span></div>
+        <div><span class="text-amber-400 font-bold text-xl">Baclayon</span> <span class="text-stone-400 block text-xs">workshop</span></div>
         <div><span class="text-amber-400 font-bold text-xl">❤️</span> <span class="text-stone-400 block text-xs">thankful</span></div>
     </div>
 </div>
 
-<!-- ABOUT short - now with video from janzel2015/Modular-RAW -->
+<!-- ABOUT short - with clickable logo to play video with sound -->
 <section id="about" class="py-16 bg-stone-900">
     <div class="max-w-6xl mx-auto px-5 grid md:grid-cols-2 gap-10 items-center">
-        <div class="about-video-container">
-            <video autoplay muted loop playsinline class="about-video">
+        <div class="about-video-container" id="aboutVideoContainer">
+            <video id="aboutVideo" muted loop playsinline class="about-video">
                 <source src="https://github.com/janzel2015/Modular-RAW/blob/main/video-market.mp4?raw=true" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
-            <div class="about-overlay">
-                <img src="https://github.com/etherneomdc3-IT/RAW/blob/main/noellogo.png?raw=true" class="h-14 w-auto brightness-0 invert opacity-90">
+            <!-- Sound hint badge (appears when video is muted) -->
+            <div id="soundBadge" class="sound-badge">
+                <i class="fas fa-volume-mute"></i>
+                <span>Click logo for sound</span>
+            </div>
+            <!-- Clickable overlay with logo -->
+            <div id="videoOverlay" class="about-overlay">
+                <img id="clickableLogo" src="https://github.com/etherneomdc3-IT/RAW/blob/main/noellogo.png?raw=true" class="h-14 w-auto brightness-0 invert opacity-90 clickable-logo" alt="Click to enable sound">
             </div>
         </div>
         <div>
             <span class="text-amber-400 text-xs tracking-[.25em]">BOHOL · SINCE 2018</span>
             <h2 class="heading-font text-4xl md:text-5xl mt-2 leading-tight">Real Philippine<br>hardwood, <span class="text-stone-400">smart modular</span></h2>
-            <p class="mt-6 text-stone-300">We build custom TV consoles, kitchens & wardrobes. Delivered anywhere in Bohol. Every piece made in our Bilar workshop.</p>
+            <p class="mt-6 text-stone-300">We build custom TV consoles, kitchens & wardrobes. Delivered anywhere in Bohol. Every piece made in our <span class="text-amber-400 font-medium">Baclayon workshop</span>.</p>
             <div class="flex gap-6 mt-8">
                 <div><i class="fas fa-check-circle text-emerald-500"></i> 2‑4 weeks</div>
                 <div><i class="fas fa-check-circle text-emerald-500"></i> free estimate</div>
             </div>
+            <p class="text-sm text-stone-400 mt-6 italic">
+                <i class="fas fa-volume-up text-amber-500 mr-1"></i> Tap the M&N logo on the video to enable sound.
+            </p>
         </div>
     </div>
 </section>
@@ -329,10 +371,73 @@
             L.marker([9.712, 124.411]).addTo(map).bindPopup('Guinsularan, Duero');
         }
 
+        // ABOUT SECTION VIDEO CONTROLS - click logo to unmute and play
+        const aboutVideo = document.getElementById('aboutVideo');
+        const soundBadge = document.getElementById('soundBadge');
+        const clickableLogo = document.getElementById('clickableLogo');
+        const videoContainer = document.getElementById('aboutVideoContainer');
+
+        function enableSoundAndPlay() {
+            if (aboutVideo) {
+                aboutVideo.muted = false;
+                aboutVideo.play()
+                    .then(() => {
+                        console.log('Video playing with sound');
+                        if (soundBadge) {
+                            soundBadge.innerHTML = '<i class="fas fa-volume-up"></i><span>Sound enabled</span>';
+                            soundBadge.style.backgroundColor = 'rgba(16,185,129,0.3)';
+                            soundBadge.style.borderColor = '#10b981';
+                        }
+                    })
+                    .catch(e => console.log('Play failed:', e));
+            }
+        }
+
+        // Add click event to the logo (and entire overlay for better touch)
+        if (clickableLogo) {
+            clickableLogo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                enableSoundAndPlay();
+            });
+        }
+
+        // Also make the whole overlay clickable for easier tapping
+        const overlay = document.getElementById('videoOverlay');
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                // Only trigger if the click wasn't already handled by the logo specifically
+                if (e.target === overlay || !e.target.closest('img')) {
+                    enableSoundAndPlay();
+                }
+            });
+        }
+
+        // Force initial autoplay (muted)
+        function forceVideoAutoplay() {
+            const videos = document.querySelectorAll('video');
+            videos.forEach(video => {
+                if (video.id !== 'aboutVideo') { // Hero video autoplay muted
+                    video.play().catch(e => {});
+                }
+            });
+            // About video starts muted
+            if (aboutVideo) {
+                aboutVideo.muted = true;
+                aboutVideo.play().catch(e => {
+                    // Retry on first touch for mobile
+                    document.body.addEventListener('touchstart', function retry() {
+                        aboutVideo.play();
+                        document.body.removeEventListener('touchstart', retry);
+                    }, { once: true });
+                });
+            }
+        }
+
         // init everything
         renderModules();
         updateTotalsAndPreview();
         initMap();
+        forceVideoAutoplay();
 
         // fix "build now" from navbar
         document.querySelector('a[href="#configurator"]')?.addEventListener('click', (e) => {
