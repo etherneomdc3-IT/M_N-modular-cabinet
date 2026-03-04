@@ -36,6 +36,34 @@
 
         .stat-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:0.75rem; }
         @media (min-width:640px){ .stat-grid { grid-template-columns: repeat(6,1fr); } }
+
+        /* Video background for about section */
+        .about-video-container {
+            position: relative;
+            width: 100%;
+            height: 20rem; /* Matches h-80 */
+            border-radius: 1.5rem;
+            overflow: hidden;
+        }
+        .about-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .about-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .about-video-container { height: 26rem; } /* md:h-[520px] equivalent */
+        }
     </style>
 </head>
 <body class="text-stone-200 antialiased">
@@ -93,11 +121,15 @@
     </div>
 </div>
 
-<!-- ABOUT short -->
+<!-- ABOUT short - now with video from janzel2015/Modular-RAW -->
 <section id="about" class="py-16 bg-stone-900">
     <div class="max-w-6xl mx-auto px-5 grid md:grid-cols-2 gap-10 items-center">
-        <div class="rounded-3xl overflow-hidden h-80 bg-[url('https://picsum.photos/id/201/800/600')] bg-cover bg-center relative">
-            <div class="absolute inset-0 bg-black/40 flex items-end p-6">
+        <div class="about-video-container">
+            <video autoplay muted loop playsinline class="about-video">
+                <source src="https://github.com/janzel2015/Modular-RAW/blob/main/video-market.mp4?raw=true" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="about-overlay">
                 <img src="https://github.com/etherneomdc3-IT/RAW/blob/main/noellogo.png?raw=true" class="h-14 w-auto brightness-0 invert opacity-90">
             </div>
         </div>
@@ -145,32 +177,23 @@
     </div>
 </section>
 
-<!-- GALLERY · swipeable 20 projects (carousel fixed) -->
+<!-- GALLERY · 10 new images from janzel2015/Modular-RAW -->
 <section id="gallery" class="py-16 bg-stone-950">
     <div class="max-w-7xl mx-auto px-5">
-        <h2 class="heading-font text-4xl md:text-5xl text-center mb-3">Recent work</h2>
-        <p class="text-center text-stone-400 mb-6">swipe → 20+ modular projects in Bohol</p>
+        <h2 class="heading-font text-4xl md:text-5xl text-center mb-3">Our latest work</h2>
+        <p class="text-center text-stone-400 mb-6">swipe → 10 new modular cabinets in Bohol</p>
         <div class="gallery-scroll pb-4">
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/53082601684_3f651f9e28_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52769880188_44c14e5aa6_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691296059_8a9e622f3e_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691300989_8bb5aaba58_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691999525_bdf9558b2c_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52692018548_5da650251b_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691989955_4ee5927c39_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691945440_983583d38f_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691999150_9c459f6330_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691172277_8a7b0c8cb8_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691286064_3ec8bb54e4_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691289949_77ca40d0a9_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691279554_e60f4e0014_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691284379_1c8c175120_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691280559_7f8e0ad9d5_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691269934_9c308fa136_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691282974_5812691ae6_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691268139_1f5b45f73a_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691267108_bb7d2ccf14_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
-            <div class="gallery-item"><img src="https://live.staticflickr.com/65535/52691265953_cd8718b6ca_b.jpg" class="rounded-3xl w-full h-80 object-cover shadow-xl"></div>
+            <!-- 10 images from Modular-RAW repository -->
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/01.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 1"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/02.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 2"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/03.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 3"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/04.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 4"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/05.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 5"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/06.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 6"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/07.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 7"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/08.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 8"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/09.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 9"></div>
+            <div class="gallery-item"><img src="https://github.com/janzel2015/Modular-RAW/blob/main/10.jpg?raw=true" class="rounded-3xl w-full h-80 object-cover shadow-xl" alt="Modular cabinet 10"></div>
         </div>
         <div class="flex justify-center gap-4 text-sm mt-6 flex-wrap">
             <a href="#" class="text-amber-400 hover:underline">Pinterest board</a>
